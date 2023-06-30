@@ -1,0 +1,61 @@
+<div class="container" >
+  <nav *ngIf="authService.hasRole('ADMIN')" class="p-2 m-2 border-info">
+    <button class="btn btn-info " (click)="handleNewProduct()">Nouveau produit</button>
+  </nav>
+  <ng-template #errors>
+    <div class="text-danger">{{errorMessage}}</div>
+  </ng-template>
+  <div class="card" *ngIf="products; else errors">
+  <div class="card-header">Liste de produits</div>
+  <div>
+    <form [formGroup]="searchFormGroup"  (ngSubmit)="handleSearchProducts(this.currentPage=0) ">
+      <div class="input-group">
+        <label class="input-group-text text-bg-info">Keyword:</label>
+        <input type="text" class="form-control" formControlName="Keyword">
+        <button class="btn btn-info" type="submit">
+          <i class="bi bi-search"></i>
+        </button>
+      </div>
+    </form>
+    <table class="table">
+      <thead>
+      <tr>
+        <th>ID</th> <th>Nom</th> <th>Prix</th> <th>Promotion</th>
+      </tr>
+      </thead>
+     <tbody>
+     <tr *ngFor="let p of products">
+       <td> {{p.id}}</td>
+       <td> {{p.name}}</td>
+       <td> {{p.price}}</td>
+       <td> <i *ngIf="p.promotion==true" class="bi bi-shield-fill-check text-success"></i>
+       </td>
+       <td *ngIf="authService.hasRole('ADMIN')">
+         <button (click)="handleSetPromotion(p)" [ngClass]="p.promotion==true? 'btn-danger' :' btn-info'" class="btn">
+           <span *ngIf="p.promotion==true">Promo Off</span>
+           <span *ngIf="p.promotion==false">Promo On</span>
+         </button>
+       </td>
+       <td *ngIf="authService.hasRole('ADMIN')">
+         <button  (click)="handlDeleteProduct(p)" class="btn btn-danger"  >
+           <i class="bi bi-trash3-fill"></i>
+         </button>
+       </td>
+       <td *ngIf="authService.hasRole('ADMIN')">
+         <button  (click)="handleEditProduct(p)" class="btn btn-success"  >
+           <i class="bi bi-pencil-square"></i>
+         </button>
+       </td>
+     </tr>
+
+     </tbody>
+    </table>
+    <ul class="nav nav-pills">
+      <li *ngFor="let item of [].constructor(this.totalPages); let i =index">
+      <a (click)="gotopage(i)" [ngClass]="i==currentPage? 'btn-info':' btn-outline-info'" class="btn  ms-1 mt-1">{{i}}</a>
+
+    </li>
+    </ul>
+  </div>
+  </div>
+  </div>
